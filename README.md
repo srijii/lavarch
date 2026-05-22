@@ -93,6 +93,17 @@ Update these after copying:
 - `~/.zshrc`  
   Update the `PATH` line that includes `/home/monok8i/.spicetify`.
 
+Optional helper to replace the hardcoded home path:
+```bash
+USER_NAME="$(whoami)"
+grep -rl "/home/monok8i" ~/.config ~/.zshrc ~/scripts | xargs sed -i "s|/home/monok8i|/home/$USER_NAME|g"
+```
+
+Find your monitor names with:
+```bash
+hyprctl monitors
+```
+
 ## 4) First launch (no WM installed)
 You can start Hyprland either from a display manager or directly from TTY:
 
@@ -116,9 +127,25 @@ sudo systemctl enable --now sddm
 
 ## 6) Notes / known manual steps
 - Waybar references `~/scripts/dunst-status.sh` but it is **not** in this repo.  
-  Either create it or remove the `custom/notification` module from Waybar.
+  Either create it (template below) or remove the `custom/notification` module from Waybar.
+  ```bash
+  cat <<'EOF' > ~/scripts/dunst-status.sh
+  #!/usr/bin/env bash
+  if dunstctl is-paused | grep -q true; then
+    echo '{"text":"","class":"muted"}'
+  else
+    echo '{"text":""}'
+  fi
+  EOF
+  chmod +x ~/scripts/dunst-status.sh
+  ```
 - `kb-brightness-notify.sh` is ASUS‑specific (`/sys/class/leds/asus::kbd_backlight`).  
-  Use only if your hardware matches, or adjust the path.
+  Find your keyboard backlight path with:
+  ```bash
+  ls /sys/class/leds
+  # or
+  find /sys/class/leds -name '*kbd*'
+  ```
 
 ## Keybinds (high level)
 Main modifier: **SUPER**
