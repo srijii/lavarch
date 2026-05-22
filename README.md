@@ -1,14 +1,8 @@
 # lavarch
 
-A minimal and opinionated Hyprland setup for Arch Linux, featuring a complete Wayland desktop configuration with curated themes, scripts, and utility integrations.
+A fully configured Hyprland setup for Arch Linux with a complete Wayland desktop environment, custom theming, utility scripts, and preconfigured applications.
 
-Designed for users who want a fast and clean Hyprland environment without manually configuring every component from scratch.
-
----
-
-# Included Components
-
-This repository contains configurations and scripts for:
+This repository includes configurations for:
 
 - Hyprland
 - Waybar
@@ -18,45 +12,57 @@ This repository contains configurations and scripts for:
 - Hyprpaper
 - Hyprlock
 - Zsh
-- Wallpapers
-- Utility scripts
+- Wallpapers and helper scripts
 
 ---
 
 # Requirements
 
-This setup assumes:
+Before using this setup:
 
-- A fresh Arch Linux installation
-- Networking configured and working
-- A user account with `sudo` access
-- Booting initially into a TTY (no desktop environment required)
+- Arch Linux installed
+- Internet connection working
+- User account with sudo access
+- Booting into a TTY session
 
 ---
 
-# 1. Initial System Setup
+# Basic System Setup
 
-Update the system and install basic tools:
+Update the system:
 
 ```bash
 sudo pacman -Syu
+```
+
+Install basic packages:
+
+```bash
 sudo pacman -S git base-devel curl zsh
 ```
 
-If networking is not configured yet, install and enable NetworkManager:
+---
+
+# Networking Setup
+
+If networking is not configured yet:
 
 ```bash
 sudo pacman -S networkmanager
 sudo systemctl enable --now NetworkManager
 ```
 
+Verify internet access:
+
+```bash
+ping archlinux.org
+```
+
 ---
 
-# 2. Required Packages
+# Full Package Installation
 
-Install the following packages before copying the configuration files.
-
-## Core Wayland / Hyprland
+## Core Hyprland / Wayland
 
 ```bash
 sudo pacman -S \
@@ -70,7 +76,7 @@ seatd
 
 ---
 
-## Bar, Launcher, Terminal, File Manager
+## Desktop Applications
 
 ```bash
 sudo pacman -S \
@@ -83,7 +89,7 @@ firefox
 
 ---
 
-## Wallpaper, Lock Screen, Screenshots
+## Wallpaper / Lockscreen / Screenshots
 
 ```bash
 sudo pacman -S \
@@ -97,7 +103,7 @@ imagemagick
 
 ---
 
-## Audio, Media, Brightness
+## Audio / Media / Brightness
 
 ```bash
 sudo pacman -S \
@@ -108,9 +114,15 @@ playerctl \
 brightnessctl
 ```
 
+Enable audio services:
+
+```bash
+systemctl --user enable --now pipewire pipewire-pulse wireplumber
+```
+
 ---
 
-## Clipboard and Notifications
+## Clipboard / Notifications
 
 ```bash
 sudo pacman -S \
@@ -121,7 +133,7 @@ dunst
 
 ---
 
-## Utilities Used by Scripts
+## Script Dependencies
 
 ```bash
 sudo pacman -S \
@@ -130,19 +142,7 @@ inotify-tools
 
 ---
 
-## Fonts
-
-Recommended font:
-
-- `0xProto Nerd Font`
-
-Install from the AUR if not available in the repositories.
-
----
-
-## Optional Shell Utilities
-
-Used in `.zshrc` and helper scripts:
+## Shell Utilities
 
 ```bash
 sudo pacman -S \
@@ -155,9 +155,19 @@ fastfetch
 
 ---
 
-## Optional Applications
+# Fonts
 
-These are referenced in application rules, icons, or scripts:
+Recommended font:
+
+- `0xProto Nerd Font`
+
+Without Nerd Fonts, many UI icons will appear broken.
+
+---
+
+# Optional Applications
+
+Optional applications referenced in rules/scripts:
 
 - Spotify
 - Spicetify
@@ -167,7 +177,9 @@ These are referenced in application rules, icons, or scripts:
 
 ---
 
-# 3. Clone the Repository
+# Clone and Install
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/srijii/lavarch.git
@@ -197,70 +209,25 @@ chmod +x ~/scripts/*.sh
 
 ---
 
-# 4. Hardware-Specific Configuration
+# Required Manual Configuration
 
-Some files contain hardcoded paths and monitor/device names that must be updated manually.
+Some configuration files contain hardcoded paths and monitor names.
 
-## Files That Require Editing
+Update these files after installation:
 
-### Hyprpaper
-
-```bash
-~/.config/hypr/hyprpaper.conf
-```
-
-Update:
-
-- `/home/monok8i`
-- Monitor name (`eDP-1`)
+| File | Required Changes |
+|---|---|
+| `~/.config/hypr/hyprpaper.conf` | Wallpaper paths and monitor name |
+| `~/.config/hypr/hyprlock.conf` | Wallpaper paths |
+| `~/scripts/random-wallpaper.sh` | Monitor name |
+| `~/.config/hypr/hyprland.conf` | Monitor and input device configuration |
+| `~/.zshrc` | Hardcoded user paths |
 
 ---
 
-### Hyprlock
+## Automatically Replace Hardcoded Paths
 
-```bash
-~/.config/hypr/hyprlock.conf
-```
-
-Update wallpaper paths if needed.
-
----
-
-### Wallpaper Script
-
-```bash
-~/scripts/random-wallpaper.sh
-```
-
-Update the monitor name if it differs from `eDP-1`.
-
----
-
-### Hyprland Configuration
-
-```bash
-~/.config/hypr/hyprland.conf
-```
-
-Update:
-
-- `monitor=` entries
-- Input device names
-- Resolution or refresh rate settings if required
-
----
-
-### Zsh Configuration
-
-```bash
-~/.zshrc
-```
-
-Update any hardcoded paths, especially Spicetify-related paths.
-
----
-
-## Automatically Replace Hardcoded Home Paths
+Replace `/home/monok8i` automatically:
 
 ```bash
 USER_NAME="$(whoami)"
@@ -279,42 +246,91 @@ hyprctl monitors
 
 ---
 
-# 5. Starting Hyprland
+# First Launch
 
-## Option A — Launch Directly From TTY
+After completing the setup, log into your TTY session and start Hyprland manually once:
 
 ```bash
 Hyprland
 ```
 
+This launches the complete desktop environment including:
+
+- Waybar
+- Hyprpaper
+- Dunst
+- Wallpaper system
+- Rofi
+- Autostart applications
+
+If everything loads correctly, continue with the auto-start setup below.
+
 ---
 
-## Option B — Use a Display Manager
+# Auto-Start Hyprland on Login
 
-Example using SDDM:
+To automatically launch Hyprland whenever logging into `tty1`, add the following to:
+
+```bash
+~/.zprofile
+```
+
+Open the file:
+
+```bash
+nano ~/.zprofile
+```
+
+Add:
+
+```bash
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    exec Hyprland
+fi
+```
+
+Save and exit.
+
+After this setup, the login flow becomes:
+
+```text
+Boot
+→ Login on tty1
+→ Hyprland starts automatically
+```
+
+No display manager is required.
+
+---
+
+# Optional: Display Manager Setup
+
+If a graphical login screen is preferred:
 
 ```bash
 sudo pacman -S sddm
 sudo systemctl enable --now sddm
 ```
 
+Then select Hyprland from the session menu.
+
 ---
 
-# 6. Post-Launch Checklist
+# Post-Install Checklist
 
-After launching Hyprland, verify the following:
+After launching Hyprland, verify:
 
-- Waybar starts correctly
-- Notifications work through Dunst
-- Hyprpaper loads wallpapers
-- Clipboard history works with `cliphist`
-- Screenshots work using `hyprshot`
+- Waybar loads correctly
+- Dunst notifications work
+- Wallpapers load correctly
+- Clipboard history works
+- Screenshots function correctly
+- PipeWire audio works
 - Rofi launches properly
-- Audio controls function through PipeWire
 
 ---
 
-# 7. Known Manual Steps
+# Known Manual Steps
 
 ## Missing `dunst-status.sh`
 
@@ -323,8 +339,6 @@ Waybar references:
 ```bash
 ~/scripts/dunst-status.sh
 ```
-
-This script is not included in the repository.
 
 Create it manually:
 
@@ -342,27 +356,19 @@ EOF
 chmod +x ~/scripts/dunst-status.sh
 ```
 
-Alternatively, remove the `custom/notification` module from Waybar.
+Or remove the `custom/notification` module from Waybar.
 
 ---
 
 ## ASUS-Specific Keyboard Backlight Script
 
-The script:
-
-```bash
-kb-brightness-notify.sh
-```
-
-uses:
+`kb-brightness-notify.sh` uses:
 
 ```bash
 /sys/class/leds/asus::kbd_backlight
 ```
 
-This path is ASUS-specific.
-
-Find the correct keyboard backlight device using:
+Find the correct device using:
 
 ```bash
 ls /sys/class/leds
@@ -378,7 +384,7 @@ find /sys/class/leds -name '*kbd*'
 
 # Keybindings
 
-Main modifier key: `SUPER`
+Main modifier: `SUPER`
 
 | Keybind | Action |
 |---|---|
@@ -393,14 +399,12 @@ Main modifier key: `SUPER`
 
 # Notes
 
-This setup is intentionally opinionated and may require adjustments depending on:
+This setup is opinionated and may require adjustments depending on:
 
 - Monitor layout
 - GPU configuration
 - Input devices
+- Laptop-specific hardware
 - Preferred applications
-- Laptop-specific hardware features
 
-Review the configuration files before daily use instead of blindly copying everything into an existing setup.
-
-```
+Review the configuration files before using them in an existing setup.
