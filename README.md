@@ -162,6 +162,87 @@ Recommended font:
 - `0xProto Nerd Font`
 
 Without Nerd Fonts, many UI icons will appear broken.
+# Installing Fonts
+
+This setup uses Nerd Fonts for icons in:
+
+- Waybar
+- Rofi
+- Kitty
+- Dunst
+- Hyprlock
+
+Without Nerd Fonts, many icons will appear as empty squares or broken symbols.
+
+---
+
+## Install 0xProto Nerd Font
+
+### Option 1 — Manual Installation (Recommended)
+
+Create the fonts directory:
+
+```bash
+mkdir -p ~/.local/share/fonts
+```
+
+Download the font:
+
+```bash
+cd ~/.local/share/fonts
+
+curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/0xProto.zip
+```
+
+Extract it:
+
+```bash
+unzip 0xProto.zip
+```
+
+Remove the zip file:
+
+```bash
+rm 0xProto.zip
+```
+
+Refresh the font cache:
+
+```bash
+fc-cache -fv
+```
+
+Verify installation:
+
+```bash
+fc-list | grep "0xProto"
+```
+
+---
+
+## Option 2 — Install from AUR
+
+Using an AUR helper like `yay`:
+
+```bash
+yay -S ttf-0xproto-nerd
+```
+
+---
+
+## Verify the Font in Hyprland
+
+After launching Hyprland:
+
+- Open Kitty
+- Open Waybar
+- Check if icons render correctly
+
+If icons appear broken, restart the session or rebuild the font cache:
+
+```bash
+fc-cache -fv
+```
 
 ---
 
