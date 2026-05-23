@@ -7,4 +7,4 @@ CURRENT_WALL=$(hyprctl hyprpaper listloaded)
 WALLPAPER=$(find "$WALLPAPER_DIR" -type f ! -name "$(basename "$CURRENT_WALL")" | shuf -n 1)
 
 # Apply the selected wallpaper with a persistent caption
-sh ~/scripts/desktop-caption.sh "$WALLPAPER"
+sh "$HOME/scripts/desktop-caption.sh" "$WALLPAPER"

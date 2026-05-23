@@ -33,5 +33,10 @@ mkdir -p "$OUTPUT_DIR"
     -annotate +0+50 "$CAPTION_TEXT" \
     "$OUTPUT_PATH"
 
-hyprctl hyprpaper preload "$OUTPUT_PATH" 2>/dev/null
-hyprctl hyprpaper wallpaper "$MONITOR,$OUTPUT_PATH" 2>/dev/null
+if ! hyprctl hyprpaper listloaded >/dev/null 2>&1; then
+    echo "hyprpaper is not running." >&2
+    exit 1
+fi
+
+hyprctl hyprpaper preload "$OUTPUT_PATH"
+hyprctl hyprpaper wallpaper "$MONITOR,$OUTPUT_PATH"
