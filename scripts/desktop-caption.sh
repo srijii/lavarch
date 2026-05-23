@@ -44,7 +44,10 @@ mkdir -p "$OUTPUT_DIR"
 
 if command -v flock >/dev/null 2>&1; then
     exec 9>"$LOCK_FILE"
-    flock -n 9 || exit 0
+    if ! flock -n 9; then
+        echo "desktop-caption: another instance is running." >&2
+        exit 0
+    fi
 fi
 
 "${MAGICK_CMD[@]}" "$WALLPAPER_PATH" \
@@ -69,7 +72,7 @@ if ! hyprctl hyprpaper listloaded >/dev/null 2>&1; then
 fi
 
 hyprctl hyprpaper preload "$OUTPUT_PATH"
-hyprctl hyprpaper wallpaper "$MONITOR,$OUTPUT_PATH"
+hyprctl hyprpaper wallpaper "$MONITOR, $OUTPUT_PATH"
 
 for ((i = 0; i < MAX_RETRIES; i++)); do
     if hyprctl hyprpaper listloaded 2>/dev/null | grep -Fxq "$OUTPUT_PATH"; then
@@ -80,7 +83,7 @@ done
 
 mapfile -t LOADED_WALLPAPERS < <(hyprctl hyprpaper listloaded 2>/dev/null || true)
 for LOADED_WALLPAPER in "${LOADED_WALLPAPERS[@]}"; do
-    if [ "$LOADED_WALLPAPER" != "$OUTPUT_PATH" ]; then
+    if [ -n "$LOADED_WALLPAPER" ] && [ "$LOADED_WALLPAPER" != "$OUTPUT_PATH" ]; then
         hyprctl hyprpaper unload "$LOADED_WALLPAPER"
     fi
 done
