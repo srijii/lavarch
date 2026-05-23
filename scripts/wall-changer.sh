@@ -61,6 +61,6 @@ if [ ! -f "$WALLPAPER_PATH" ]; then
 fi
 
 # Встановлюємо шпалери з постійним підписом
-sh "$HOME/scripts/desktop-caption.sh" "$WALLPAPER_PATH"
+bash "$HOME/scripts/desktop-caption.sh" "$WALLPAPER_PATH"
 
 exit 0

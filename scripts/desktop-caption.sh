@@ -5,7 +5,8 @@ set -euo pipefail
 CAPTION_TEXT="${CAPTION_TEXT:-Text goes here}"
 WALLPAPER_PATH="${1:-$HOME/.wallpapers/hollow-knight-white.jpg}"
 OUTPUT_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/lavarch"
-OUTPUT_PATH="$OUTPUT_DIR/desktop-caption.png"
+OUTPUT_KEY="$(printf '%s\0%s' "$WALLPAPER_PATH" "$CAPTION_TEXT" | sha256sum | awk '{print $1}')"
+OUTPUT_PATH="$OUTPUT_DIR/desktop-caption-$OUTPUT_KEY.png"
 MONITOR="${HYPR_WALLPAPER_MONITOR:-eDP-1}"
 
 if [ ! -f "$WALLPAPER_PATH" ]; then
@@ -33,10 +34,18 @@ mkdir -p "$OUTPUT_DIR"
     -annotate +0+50 "$CAPTION_TEXT" \
     "$OUTPUT_PATH"
 
+for _ in {1..20}; do
+    if hyprctl hyprpaper listloaded >/dev/null 2>&1; then
+        break
+    fi
+    sleep 0.2
+done
+
 if ! hyprctl hyprpaper listloaded >/dev/null 2>&1; then
     echo "hyprpaper is not running." >&2
     exit 1
 fi
 
+hyprctl hyprpaper unload all
 hyprctl hyprpaper preload "$OUTPUT_PATH"
 hyprctl hyprpaper wallpaper "$MONITOR,$OUTPUT_PATH"
