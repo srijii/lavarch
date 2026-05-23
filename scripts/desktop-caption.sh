@@ -81,6 +81,11 @@ for ((i = 0; i < MAX_RETRIES; i++)); do
     sleep "$RETRY_DELAY"
 done
 
+if ! hyprctl hyprpaper listloaded 2>/dev/null | grep -Fxq "$OUTPUT_PATH"; then
+    echo "desktop-caption: caption wallpaper was not confirmed as loaded; skipping cleanup." >&2
+    exit 0
+fi
+
 mapfile -t LOADED_WALLPAPERS < <(hyprctl hyprpaper listloaded 2>/dev/null || true)
 for LOADED_WALLPAPER in "${LOADED_WALLPAPERS[@]}"; do
     if [ -n "$LOADED_WALLPAPER" ] && [ "$LOADED_WALLPAPER" != "$OUTPUT_PATH" ]; then
