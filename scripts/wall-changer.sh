@@ -60,8 +60,7 @@ if [ ! -f "$WALLPAPER_PATH" ]; then
     exit 1
 fi
 
-# Встановлюємо шпалери, викликаючи hyprpaper НАПРЯМУ
-hyprctl hyprpaper preload "$WALLPAPER_PATH" 2>/dev/null
-hyprctl hyprpaper wallpaper "eDP-1,$WALLPAPER_PATH" 2>/dev/null
+# Встановлюємо шпалери з постійним підписом
+sh ~/scripts/desktop-caption.sh "$WALLPAPER_PATH"
 
 exit 0
